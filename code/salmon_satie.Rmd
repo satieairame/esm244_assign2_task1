@@ -7,24 +7,43 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(dplyr)
+library(lubridate)
+library(tsibble)
+library(feasts)
+library(slider)
 ```
 
-## R Markdown
+# Passage of salmon over Willamette Falls fish ladder (2001-2010)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+![Willamette River](header-willamette-river.jpg)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
-```
+## Overview
 
-## Including Plots
+#### These data describe adult fish passage recorded from 2001-01-01 to 2010-12-31 at the Willamette Falls fish ladder on the Willamette River (Oregon). Data were shared by and accessed from Columbia River DART.
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+![Willamette Falls Fishway Map. Oregon Fish Commission. 1968. Willamette Falls Fishway for Portland Chapter, The Izaak Walton League of America, Inc. May 10 1968.](fishway-map.jpg)
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+#### Citation: Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas, and Grant County PUDs, Yakima Klickitat Fisheries Project, Colville Tribes Fish & Wildlife (OBMEP), Oregon Department of Fish & Wildlife, Washington Department of Fish & Wildlife.
+
+## Report {.tabset}
+
+### Original time series
+
+
+### Seasonplots
+
+
+### Annual counts by species
+
+
+
+
+
+
+
