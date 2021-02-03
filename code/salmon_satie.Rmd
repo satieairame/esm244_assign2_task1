@@ -2,7 +2,9 @@
 title: "salmon_satie"
 author: "Satie Airame"
 date: "2/2/2021"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -15,6 +17,8 @@ library(lubridate)
 library(tsibble)
 library(feasts)
 library(slider)
+library(patchwork)
+
 ```
 
 # Passage of salmon over Willamette Falls fish ladder (2001-2010)
@@ -24,19 +28,74 @@ library(slider)
 
 ## Overview
 
-#### These data describe adult fish passage recorded from 2001-01-01 to 2010-12-31 at the Willamette Falls fish ladder on the Willamette River (Oregon). Data were shared by and accessed from Columbia River DART.
+These data describe adult fish passage recorded from 2001-01-01 to 2010-12-31 at the Willamette Falls fish ladder on the Willamette River (Oregon). Data were shared by and accessed from Columbia River DART.
 
 
 ![Willamette Falls Fishway Map. Oregon Fish Commission. 1968. Willamette Falls Fishway for Portland Chapter, The Izaak Walton League of America, Inc. May 10 1968.](fishway-map.jpg)
 
-#### Citation: Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas, and Grant County PUDs, Yakima Klickitat Fisheries Project, Colville Tribes Fish & Wildlife (OBMEP), Oregon Department of Fish & Wildlife, Washington Department of Fish & Wildlife.
+Citation: Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas, and Grant County PUDs, Yakima Klickitat Fisheries Project, Colville Tribes Fish & Wildlife (OBMEP), Oregon Department of Fish & Wildlife, Washington Department of Fish & Wildlife.
 
 ## Report {.tabset}
 
 ### Original time series
 
 
+
 ### Seasonplots
+
+```{r, message = FALSE}
+# Read in data and clean names.
+
+salmon <- read_csv(here("data", "willamette_fish_passage.csv")) %>% 
+  clean_names() %>%  
+  mutate(date = mdy(date))
+
+salmon_subset <- salmon %>% 
+  select(date, coho, jack_coho, steelhead) %>% 
+  mutate(coho = replace_na(coho, 0)) %>% 
+  mutate(jack_coho = replace_na(jack_coho, 0)) %>% 
+  mutate(steelhead = replace_na(steelhead, 0))
+
+salmon_subset_ts <- as_tsibble(salmon_subset)
+
+```
+
+
+```{r}
+steelhead <- salmon_subset_ts %>%
+  filter(year(date) > 2001) %>%
+  gg_season(y = steelhead, show.legend = FALSE) +
+  labs(x = "Year",
+       y = "Number of Steelhead")
+
+```
+
+
+```{r}
+coho <- salmon_subset_ts %>%
+  filter(year(date) > 2001) %>%
+  gg_season(y = coho, show.legend = FALSE)  +
+  labs(x = element_blank(),
+       y = "Number of Coho",
+       title = "Figure 1. Number of salmon in Willamette Falls Fishway")
+
+```
+
+
+```{r}
+jack_coho <- salmon_subset_ts %>%
+  filter(year(date) > 2001) %>%
+  gg_season(y = jack_coho) +
+  labs(x = element_blank(),
+       y = "Number of Jack Coho")
+
+```
+```{r}
+salmon_graph <- coho / jack_coho / steelhead & theme_minimal()
+salmon_graph
+```
+
+Steelhead salmon migrate up the Willamette Falls Fishway between February and July, wherease Coho and Jack Coho migrate up the fishway in October. The maximum number of Coho migrating per day is much greater (more than 1000) than the maximum number of Jack Coho (~300) or Steelhead (~600). The number of Coho migrating per day have increased greately over time since 2005.
 
 
 ### Annual counts by species
