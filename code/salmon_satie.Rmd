@@ -39,10 +39,6 @@ Citation: Data Courtesy of U.S. Army Corps of Engineers, NWD and Chelan, Douglas
 
 ### Original time series
 
-
-
-### Seasonplots
-
 ```{r, message = FALSE}
 # Read in data and clean names.
 
@@ -56,22 +52,43 @@ salmon_subset <- salmon %>%
   mutate(jack_coho = replace_na(jack_coho, 0)) %>% 
   mutate(steelhead = replace_na(steelhead, 0))
 
-salmon_subset_ts <- as_tsibble(salmon_subset)
+# Define colors for different fish species
+
+colors <- c("Coho" = "darkred", "Jack Coho" = "steelblue", "Steelhead" = "gray")
+
+# Create line plot of three salmon species over time
+
+ggplot(data = salmon_subset, aes(x=date))+
+  geom_line(aes(y=coho, color = "Coho"), size = 0.5)+
+  geom_line(aes(y=jack_coho, color = "Jack Coho"), size = 0.5)+
+  geom_line(aes(y=steelhead, color = "Steelhead"), size = 0.5) +
+  labs(x="Year",
+       y = "Number of fish",
+       title = "Number of fish crossing Willamette Falls Fishway, 2001 - 2010",
+       color = "Legend")+
+  theme_minimal()+
+  scale_color_manual(values = colors)
+  
 
 ```
 
+There are strong seasonal cycles of fish crossing the Willamette Falls Fishway. Coho and Jack Coho tend to cross the fishway at different times from Steelhead. There is an increasing trend over time in the number of 
+Coho.
 
-```{r}
+
+### Seasonplots
+
+```{r, message = FALSE}
+# Create tsibble
+
+salmon_subset_ts <- as_tsibble(salmon_subset)
+
 steelhead <- salmon_subset_ts %>%
   filter(year(date) > 2001) %>%
   gg_season(y = steelhead, show.legend = FALSE) +
   labs(x = "Year",
        y = "Number of Steelhead")
 
-```
-
-
-```{r}
 coho <- salmon_subset_ts %>%
   filter(year(date) > 2001) %>%
   gg_season(y = coho, show.legend = FALSE)  +
@@ -79,18 +96,14 @@ coho <- salmon_subset_ts %>%
        y = "Number of Coho",
        title = "Figure 1. Number of salmon in Willamette Falls Fishway")
 
-```
-
-
-```{r}
 jack_coho <- salmon_subset_ts %>%
   filter(year(date) > 2001) %>%
   gg_season(y = jack_coho) +
   labs(x = element_blank(),
        y = "Number of Jack Coho")
 
-```
-```{r}
+# Use patchwork to create compound graph
+
 salmon_graph <- coho / jack_coho / steelhead & theme_minimal()
 salmon_graph
 ```
